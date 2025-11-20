@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Телефондар — Қойма</title>
+  <style>
+    :root{--accent:#0b74de;--card:#fff;--bg:#f3f6fb}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#111}
+    header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06);position:sticky;top:0;z-index:5}
+    .back{border:0;background:transparent;color:var(--accent);font-weight:600;cursor:pointer;padding:6px 10px;border-radius:8px}
+    .title{flex:1;text-align:center;font-size:18px;font-weight:600}
+    main{padding:28px;display:flex;flex-direction:column;align-items:center;min-height:calc(100vh - 64px)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;width:100%;max-width:1100px}
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(20,30,60,.06);display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;cursor:pointer}
+    .cat-photo{width:100%;height:140px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:40px;color:#fff}
+    .name{font-weight:700}
+    .price{color:var(--accent);font-weight:700}
+    .detail{display:none;max-width:720px;width:100%;background:var(--card);border-radius:12px;padding:20px;box-shadow:0 8px 30px rgba(10,20,40,.06)}
+    .detail.show{display:block}
+    .detail-top{display:flex;gap:20px;align-items:flex-start}
+    .detail-img{flex:0 0 320px;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;height:320px;background:#eef6ff}
+    .detail-info{flex:1}
+    .buy{display:inline-block;padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;margin-top:10px}
+    .specs{margin-top:16px}
+    .specs li{padding:6px 0;border-bottom:1px dashed #eee}
+    footer{margin-top:30px;color:#666;font-size:13px}
+    @media(max-width:720px){.detail-top{flex-direction:column}.detail-img{width:100%;height:260px}}
+  </style>
+</head>
+<body>
+  <header>
+    <button class="back" id="backTop" aria-hidden>◀ Артқа</button>
+    <div class="title">Телефондар — каталог</div>
+  </header>
+
+  <main>
+    <!-- LIST VIEW -->
+    <section id="listView" aria-label="Телефондар тізімі">
+      
+      </div>
+
+      <div class="grid" id="phonesGrid"></div>
+    </section>
+
+    <!-- DETAIL VIEW -->
+    <section id="detailView" class="detail" aria-label="Телефон мәліметтері">
+      <div class="detail-top">
+        <div class="detail-img" id="detailImg" role="img" aria-label="Телефон суреті">📱</div>
+        <div class="detail-info">
+          <h2 id="detailName">Телефон аты</h2>
+          <div style="font-size:20px;margin-top:6px" class="price" id="detailPrice">₸0</div>
+          <a href="#" class="buy" id="buyBtn">Купить</a>
+
+          <div class="specs">
+            <h3 style="margin:12px 0 6px">Характеристика</h3>
+            <ul id="specList"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+  </main>
+
+  <script>
+    // Sample data — қалауыңызша өзгертіңіз
+    const phones = [
+      {
+        id: 'p1',
+        category: 'Флагман',
+        name: 'Galaxy A1 Ultra',
+        price: 289990,
+        color: '#0b74de',
+        imgSVG: `<svg width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" rx="20" fill="#0b74de"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="36" fill="#fff">Galaxy A1</text></svg>`,
+        specs: ['Экран: 6.7" AMOLED', 'Процессор: Octa-core 3.0GHz', 'RAM: 8 ГБ', 'Камера: 108 МП', 'Батарея: 5000 мАч']
+      },
+      {
+        id: 'p2',
+        category: 'Бюджет',
+        name: 'Redmi Note Z',
+        price: 89990,
+        color: '#f59e0b',
+        imgSVG: `<svg width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" rx="20" fill="#f59e0b"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="36" fill="#fff">Redmi Z</text></svg>`,
+        specs: ['Экран: 6.5" IPS', 'Процессор: Quad-core 2.2GHz', 'RAM: 4 ГБ', 'Камера: 48 МП', 'Батарея: 5000 мАч']
+      },
+      {
+        id: 'p3',
+        category: 'Оңтайландырылған',
+        name: 'iPhone Lite',
+        price: 199990,
+        color: '#111827',
+        imgSVG: `<svg width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" rx="20" fill="#111827"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="36" fill="#fff">iPhone L</text></svg>`,
+        specs: ['Экран: 6.1" OLED', 'Процессор: Hexa-core 2.9GHz', 'RAM: 6 ГБ', 'Камера: 64 МП', 'Батарея: 3800 мАч']
+      }
+    ];
+
+    const grid = document.getElementById('phonesGrid');
+    const detailView = document.getElementById('detailView');
+    const listView = document.getElementById('listView');
+    const backTop = document.getElementById('backTop');
+
+    function formatPrice(n){ return '₸' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") }
+
+    function makeCard(phone){
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML = `
+        <div class="cat-photo" style="background:${phone.color}">${phone.imgSVG}</div>
+        <div class="name">${phone.name}</div>
+        <div class="price">${formatPrice(phone.price)}</div>
+      `;
+      el.addEventListener('click', ()=> openDetail(phone.id));
+      return el;
+    }
+
+    phones.forEach(p=> grid.appendChild(makeCard(p)));
+
+    function openDetail(id){
+      const p = phones.find(x=>x.id===id);
+      if(!p) return;
+      // set image
+      const img = document.getElementById('detailImg');
+      img.innerHTML = p.imgSVG;
+      // name & price
+      document.getElementById('detailName').textContent = p.name;
+      document.getElementById('detailPrice').textContent = formatPrice(p.price);
+      // specs
+      const list = document.getElementById('specList');
+      list.innerHTML = '';
+      p.specs.forEach(s=>{ const li=document.createElement('li'); li.textContent=s; list.appendChild(li); });
+      // buy button action (пример)
+      const buyBtn = document.getElementById('buyBtn');
+      buyBtn.onclick = (e)=>{ e.preventDefault(); alert(p.name + ' сатып алу — ' + formatPrice(p.price)); };
+
+      // show detail, hide list
+      detailView.classList.add('show');
+      listView.style.display = 'none';
+      backTop.style.visibility = 'visible';
+    }
+
+    function goBack(){
+      detailView.classList.remove('show');
+      listView.style.display = '';
+      backTop.style.visibility = 'hidden';
+    }
+
+    backTop.addEventListener('click', goBack);
+    // initial state: back hidden
+    backTop.style.visibility = 'hidden';
+
+    // optional: support browser back (pushState)
+    window.addEventListener('popstate', (e)=>{ if(e.state && e.state.phoneId) openDetail(e.state.phoneId); else goBack(); });
+
+    // when opening detail, push history so user can use browser back button
+    const originalOpenDetail = openDetail;
+    openDetail = function(id){
+      history.pushState({phoneId:id}, '', '#'+id);
+      originalOpenDetail(id);
+    }
+
+    // if url has hash on load, open that detail
+    document.addEventListener('DOMContentLoaded', ()=>{
+      if(location.hash){ const id = location.hash.replace('#',''); const exists = phones.some(p=>p.id===id); if(exists) openDetail(id); }
+    });
+  </script>
+</body>
+</html>
